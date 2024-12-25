@@ -10,17 +10,6 @@ client = OpenAI(
 )
 
 
-def fetch_blog_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        content = response.text
-        return content
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching blog content: {e}")
-        return None
-
-
 def summarize_content(content):
     prompt = "공부한 내용에 대해서 피드백을 해줘. 공부한 내용에 보충을 해도 되고, 더 공부하기 좋은 내용을 추천해줘  :\n\n" + content
     try:
