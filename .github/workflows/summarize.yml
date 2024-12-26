@@ -35,10 +35,13 @@ jobs:
       - name: Get Changed Files
         id: get_files
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/main ${{ github.sha }})
+          CHANGED_FILES=$(git diff --name-only origin/main ad763de76c62c43b8be5c65a7425c73f330836bb)
           if [ -z "$CHANGED_FILES" ]; then
             echo "changed_files=" >> $GITHUB_ENV
           else
+            # 줄바꿈을 쉼표로 변환
+            CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ',')
+            # 환경 변수에 저장
             echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
           fi
 
