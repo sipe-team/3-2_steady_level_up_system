@@ -46,23 +46,31 @@ jobs:
       - name: Process Changed Files
         env:
           OPENAI_API_KEY: ${{ secrets.GPT_KEY }}
+          changed_files: ${{ env.changed_files }}
         run: |
-          if [ -z "${{ env.changed_files }}" ]; then
+          if [ -z "$changed_files" ]; then
+            echo "No changed files to process."
             exit 0
           fi
 
           SUMMARY_MESSAGE="### Automated Review\n"
           IFS=$'\n'
-          for file_path in ${{ env.changed_files }}; do
-            # Check if the file matches the link.md pattern
+          for file_path in $changed_files; do
+            # Skip link.md files
             if [[ "$file_path" == *link.md ]]; then
-              # Skip link.md files
               continue
             fi
 
-            # Run feedback.py for non-link.md files
-            FILE_CONTENT=$(cat "$file_path")
-            FEEDBACK=$(python feedback.py --content "$FILE_CONTENT")
+            # Process non-link.md files
+            echo "Processing file: $file_path"
+            FILE_CONTENT=$(cat "$file_path" || echo "")
+            if [ -z "$FILE_CONTENT" ]; then
+              SUMMARY_MESSAGE+="Error: Could not read content of $file_path\n"
+              continue
+            fi
+
+            # Run feedback.py
+            FEEDBACK=$(python feedback.py --content "$FILE_CONTENT" || echo "Error: feedback.py failed for $file_path")
             SUMMARY_MESSAGE+="Feedback for file: $file_path\n"
             SUMMARY_MESSAGE+="$FEEDBACK\n"
           done
