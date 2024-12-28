@@ -42,6 +42,7 @@ jobs:
           else
             # .md 파일만 필터링
             MD_FILES=$(echo "$CHANGED_FILES" | grep -E '^week[0-9]+/.*\.md$')
+            echo $MD_FILES
 
             if [ -z "$MD_FILES" ]; then
               echo "changed_files=" >> $GITHUB_ENV
